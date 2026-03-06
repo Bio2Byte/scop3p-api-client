@@ -87,8 +87,8 @@ Install from source (editable):
 
 1. Clone the project to your working environment:
     ```bash
-    git clone git@github.com:Bio2Byte/scop3p-api-wrapper.git
-    cd scop3p-api-wrapper
+    git clone git@github.com:Bio2Byte/scop3p-api-client.git
+    cd scop3p-api-client
     ```
 2. Create the virtual environment: 
     ```bash
