@@ -349,3 +349,11 @@ peptides, peptides_meta = api.fetch_peptides("O95755", return_metadata=True)
 # Or keep using the functional wrappers
 structures = fetch_structures("O95755")
 ```
+
+---
+
+# About us
+
+The [Computational Omics and Systems Biology Group (CompOmics)](https://www.compomics.com), headed by Prof. Dr. Lennart Martens, is part of the Department of Biomolecular Medicine of the Faculty of Medicine and Health Sciences of Ghent University, and the VIB-UGent Center for Medical Biotechnology of VIB, both in Ghent, Belgium. The group has its roots in Ghent, but has active members all over Europe, and specializes in the management, analysis and integration of high-throughput Omics data with an aim towards establishing solid data stores, processing methods and tools to enable downstream systems biology research.
+
+The lab [Bio2Byte](https://bio2byte.be) researches the relation between protein sequence and biophysical behavior. The group is mainly located at the Interuniversity Institute Of Bioinformatics Brussels (IB2) in Brussels, Belgium.
