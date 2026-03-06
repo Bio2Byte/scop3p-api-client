@@ -1,0 +1,9 @@
+title: The official Scop3P REST API Python client
+description: Querying phospho-site data from Scop3P through the Python client and CLI.
+theme: minima
+markdown: kramdown
+header_pages:
+  - getting-started.md
+  - methodology.md
+  - python-api.md
+  - examples.md

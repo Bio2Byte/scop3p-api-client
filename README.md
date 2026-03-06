@@ -18,6 +18,11 @@
 - Multiple output formats (JSON + TSV variants)
 - FAIR-oriented provenance log written by default (`output.log`)
 
+## Documentation
+
+- GitHub Pages: <https://bio2byte.github.io/scop3p_api_client/>
+- Docs source in this repository: [`docs/`](docs/)
+
 ## Citation
 
 If you use this Python client, cite the project in `CITATION.cff`.

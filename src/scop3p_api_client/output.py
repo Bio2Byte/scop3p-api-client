@@ -165,7 +165,7 @@ class Scop3pResultFairLogOutput(Scop3pResultOutput):
                     "metadata_format": "application/json",
                 },
                 "reusable": {
-                    "license": "MIT",
+                    "license": "Apache-2.0",
                     "citation": "CITATION.cff",
                 },
             },
