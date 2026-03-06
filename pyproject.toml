@@ -51,10 +51,10 @@ test = [
 ]
 
 [project.urls]
-homepage = "https://iomics.ugent.be/scop3p"
+homepage = "https://bio2byte.github.io/scop3p-api-client/"
 DOCUMENTATION = "https://iomics.ugent.be/scop3p/documentation"
-Repository = "https://github.com/Bio2Byte/scop3p_api_client.git"
-GitHub = "https://github.com/Bio2Byte/scop3p_api_client"
+Repository = "https://github.com/Bio2Byte/scop3p-api-client.git"
+GitHub = "https://github.com/Bio2Byte/scop3p-api-client"
 
 [project.scripts]
 scop3p = "scop3p_api_client.cli:main"
