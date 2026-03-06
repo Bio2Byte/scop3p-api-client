@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools >= 61","wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scop3p"
+version = "1.0.0"
+description = "The official Scop3P REST API Python client"
+readme = "README.md"
+requires-python = ">=3.6,<4"
+authors = [
+  { name = "Pathmanaban Ramasamy", email="pathmanaban.ramasamy@ugent.be" },
+  { name = "Natalia Tichshenko", email="natalia.tichshenko@ugent.be" }, 
+  { name = "Adrián Díaz", email = "adrian.diaz@vub.be" },
+]
+maintainers = [ 
+  { name = "Pathmanaban Ramasamy", email="pathmanaban.ramasamy@ugent.be" },
+  { name = "Natalia Tichshenko", email="natalia.tichshenko@ugent.be" }, 
+  { name = "Adrián Díaz", email = "adrian.diaz@vub.be" },
+]
+license = "Apache-2.0"
+license-files = ["LICENSE", "AUTHORS.md"]
+
+keywords = [
+  "proteomics", 
+  "ptm", 
+  "post-translational modifications", 
+  "phospho", 
+  "phospho-sites",
+  "phosphosite",
+  "mass spectrometry",
+  "UniProtKB"
+]
+
+dependencies = [
+  "requests >= 2.0"
+]
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Programming Language :: Python :: 3",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Bio-Informatics", 
+]
+
+[project.optional-dependencies]
+test = [
+  "coverage[toml] >= 7.0"
+]
+
+[project.urls]
+homepage = "https://iomics.ugent.be/scop3p"
+DOCUMENTATION = "https://iomics.ugent.be/scop3p/documentation"
+Repository = "https://github.com/Bio2Byte/scop3p_api_client.git"
+GitHub = "https://github.com/Bio2Byte/scop3p_api_client"
+
+[project.scripts]
+scop3p = "scop3p_api_client.cli:main"
+
+[tool.unittest]
+start-directory = "tests"
+pattern = "test_*.py"
+top-level-directory = "."
+
+[tool.coverage.run]
+branch = true
+source = ["src/scop3p_api_client"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

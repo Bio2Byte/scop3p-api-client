@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Ramasamy"
+  given-names: "Pathmanaban"
+  orcid: "https://orcid.org/0000-0003-4039-5230"
+- family-names: "Tichshenko"
+  given-names: "Natalia"
+  orcid: "https://orcid.org/0000-0001-7914-0759"
+- family-names: "Díaz"
+  given-names: "Adrián"
+  orcid: "https://orcid.org/0000-0003-0165-1318"
+
+title: "Bio2Byte/scop3p-api-client"
+version: 1.0.0
+url: "https://github.com/Bio2Byte/scop3p-api-client"
+
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Ramasamy"
+    given-names: "Pathmanaban"
+    orcid: "https://orcid.org/0000-0003-4039-5230"
+  - family-names: "Turan"
+    given-names: "__Demet"
+  - family-names: "Tichshenko"
+    given-names: "Natalia"
+    orcid: "https://orcid.org/0000-0001-7914-0759"
+  - family-names: "Hulstaert__"
+    given-names: "Niels"
+  - family-names: "Vandermarliere"
+    given-names: "Elien"
+    orcid: "https://orcid.org/0000-0001-5514-1060"
+  - family-names: "Vranken"
+    given-names: "Wim"
+    orcid: "https://orcid.org/0000-0001-7470-4324"
+  - family-names: "Lennart"
+    given-names: "Martens"
+    orcid: "https://orcid.org/0000-0003-4277-658X"
+  doi: "10.1021/acs.jproteome.0c00306"
+  journal: "Journal of Proteome Research"
+  month: 6
+  start: 3478
+  end: 3486
+  title: "Scop3P: A Comprehensive Resource of Human Phosphosites within Their Full Context"
+  issue: 19
+  volume: 8
+  year: 2020
