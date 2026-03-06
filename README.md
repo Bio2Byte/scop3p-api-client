@@ -1,5 +1,11 @@
 # The official Scop3P REST API Python client
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18889471.svg)](https://doi.org/10.5281/zenodo.18889471)
+[![Pages Deploy](https://github.com/Bio2Byte/scop3p-api-client/actions/workflows/jekyll-gh-pages.yml/badge.svg)](https://github.com/Bio2Byte/scop3p-api-client/actions/workflows/jekyll-gh-pages.yml)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-2ea44f?logo=githubpages)](https://bio2byte.github.io/scop3p-api-client/)
+[![Static Badge](https://img.shields.io/badge/licence-apache_2_0-blue)](https://github.com/Bio2Byte/scop3p-api-client/blob/main/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/Bio2Byte/scop3p-api-client)](https://github.com/Bio2Byte/scop3p-api-client/releases)
+
 <div align="center">
   <img src="assets/branding/logo.png" alt="Project logo" width="640">
 </div>
@@ -7,7 +13,9 @@
 **[Scop3P](https://iomics.ugent.be/scop3p)**, an **ELIXIR Belgium node service**, is focused on **phospho-sites** on protein 3D structure.
 
 > Scop3P provides a unique and powerful resource to explore and understand the impact of phospho-sites on human protein structure and function, and can thus serve as a springboard for researchers seeking to analyse and interpret a given phosphosite or phosphoprotein in a structural, biophysical, and biological context.
+
 > The resource re-uses public domain data from a variety of leading international resources, including UniProtKB and PDB, but also uses reprocessed mass spectrometry-based phospho-proteomics data from PRIDE/ProteomExchange, which is in turn globally collected and thus wholly international-driven.
+
 > Scop3P is developed at Ghent University and is online since June 2019. 
 
 **Python client features:**
