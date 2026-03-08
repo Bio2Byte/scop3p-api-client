@@ -16,7 +16,9 @@ dist/
 
 # OS
 .DS_Store
-.github
+.github/*
+!.github/workflows/
+!.github/workflows/*.yml
 
 # Coverage
 .coverage
