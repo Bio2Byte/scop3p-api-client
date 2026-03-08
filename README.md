@@ -134,14 +134,15 @@ scop3p --accession O95755 --no-cache
 # Set custom cache TTL (in seconds)
 scop3p --accession O95755 --cache-ttl 600
 
-# Include structures and peptides in stdout JSON (no saved files)
-scop3p --accession O95755 --include-structures --include-peptides
+# Include structures, peptides, and mutations in stdout JSON (no saved files)
+scop3p --accession O95755 --include-structures --include-peptides --include-mutations
 
 # Save multiple outputs in one invocation (TARGET:FORMAT:PATH)
 scop3p --accession O95755 \
   --save modifications:tsv:modifications.tsv \
   --save structures:tsv:structures.tsv \
-  --save peptides:json:peptides.json
+  --save peptides:json:peptides.json \
+  --save mutations:tsv:mutations.tsv
 
 # Save one output file (same --save syntax)
 scop3p --accession O95755 --save modifications:json:results.json
@@ -156,8 +157,9 @@ PYTHONPATH=./src python -m scop3p_api_client phospho --accession O95755
 **Important Notes:**
 
 - **Structures TSV Format**: The structures data is nested in the JSON response (each structure contains a `structureModificationsList`). When exporting to TSV, the data is automatically flattened - one row per modification with structure-level fields (pdbId, resolution, etc.) repeated for each modification.
-- **Automatic endpoint selection**: requesting `structures` or `peptides` via `--save` automatically fetches those datasets.
-- **Stdout enrichment**: use `--include-structures` and/or `--include-peptides` to include them in stdout JSON when not saving files.
+- **Mutations columns and sort**: mutations tabular output uses `position`, `pdbIds`, `referenceAA`, `altAA`, `type`, `disease` and sorts rows by `position`, then `referenceAA`, then `altAA`, then `type`.
+- **Automatic endpoint selection**: requesting `structures`, `peptides`, or `mutations` via `--save` automatically fetches those datasets.
+- **Stdout enrichment**: use `--include-structures`, `--include-peptides`, and/or `--include-mutations` to include them in stdout JSON when not saving files.
 - **Dataset JSON saves**: `--save TARGET:json:PATH` writes the normalized dataset payload for that target only (not the full `apiResult + metadata` envelope).
 
 **CLI Arguments:**
@@ -166,8 +168,9 @@ PYTHONPATH=./src python -m scop3p_api_client phospho --accession O95755
 - `--api-version` / `-v`: Optional API version query parameter
 - `--include-structures`: Include structures in stdout JSON output
 - `--include-peptides`: Include peptides in stdout JSON output
+- `--include-mutations`: Include mutations in stdout JSON output
 - `--save`: Repeatable output specification `TARGET:FORMAT:PATH`
-  - `TARGET`: `modifications`, `structures`, `peptides`
+  - `TARGET`: `modifications`, `structures`, `peptides`, `mutations`
   - `FORMAT`: `json`, `tsv`
 - `--raw`: Output compact JSON (used for stdout and `json` saves)
 - `--indent`: JSON indentation size (default: 2, ignored when `--raw` is set)
@@ -254,11 +257,12 @@ result = Scop3pResult.from_api(
     accession="O95755"
 )
 
-# Include structures and peptides
+# Include structures, peptides, and mutations
 result = Scop3pResult.from_api(
     accession="O95755",
     include_structures=True,
-    include_peptides=True
+    include_peptides=True,
+    include_mutations=True
 )
 
 # With API version and custom cache TTL
@@ -278,6 +282,7 @@ result = Scop3pResult.from_api(
 print(result.modifications)
 print(result.structures)  # None if not requested
 print(result.peptides)    # None if not requested
+print(result.mutations)   # None if not requested
 print(result.metadata)
 
 # Convert to dictionary
@@ -301,6 +306,7 @@ from scop3p_api_client.result import Scop3pResult
 from scop3p_api_client.output import (
     Scop3pResultJSONOutput,
     Scop3pResultModificationsTabularOutput,
+    Scop3pResultMutationsTabularOutput,
     Scop3pResultStructuresTabularOutput,
     Scop3pResultPeptidesTabularOutput,
 )
@@ -309,7 +315,8 @@ from scop3p_api_client.output import (
 result = Scop3pResult.from_api(
     accession="O95755",
     include_structures=True,
-    include_peptides=True
+    include_peptides=True,
+    include_mutations=True
 )
 
 # JSON output
@@ -341,6 +348,14 @@ pep_formatter = Scop3pResultPeptidesTabularOutput(
     include_header=False
 )
 pep_formatter.print_to_console()
+
+# Mutations as TSV
+mut_formatter = Scop3pResultMutationsTabularOutput(
+    result,
+    separator="\t",
+    include_header=True
+)
+mut_formatter.write_to_file("mutations.tsv")
 ```
 
 **Low-level API usage:**
@@ -351,6 +366,7 @@ The procedural helpers now wrap an underlying `Scop3pRestApi` instance. You can 
 from scop3p_api_client.api import (
     Scop3pRestApi,
     fetch_modifications,
+    fetch_mutations,
     fetch_structures,
     fetch_peptides,
 )
@@ -358,9 +374,11 @@ from scop3p_api_client.api import (
 api = Scop3pRestApi()
 data = api.fetch_modifications("O95755")
 peptides, peptides_meta = api.fetch_peptides("O95755", return_metadata=True)
+mutations, mutations_meta = api.fetch_mutations("O95755", return_metadata=True)
 
 # Or keep using the functional wrappers
 structures = fetch_structures("O95755")
+mutations = fetch_mutations("O95755")
 ```
 
 ---

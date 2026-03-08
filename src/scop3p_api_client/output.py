@@ -4,10 +4,12 @@ from typing import Any, Dict, List, Optional
 import datetime
 import json
 
-from .api import BASE_URL, PEPTIDES_URL, STRUCTURES_URL
+from .api import BASE_URL, MUTATIONS_URL, PEPTIDES_URL, STRUCTURES_URL
 from .sorting import (
     MODIFICATIONS_COLUMNS,
     MODIFICATIONS_PRIMARY_KEY,
+    MUTATIONS_COLUMNS,
+    MUTATIONS_PRIMARY_KEY,
     PEPTIDES_COLUMNS,
     PEPTIDES_PRIMARY_KEY,
     STRUCTURES_COLUMNS,
@@ -120,6 +122,8 @@ class Scop3pResultFairLogOutput(Scop3pResultOutput):
             endpoints.append(STRUCTURES_URL)
         if self.result.peptides is not None:
             endpoints.append(PEPTIDES_URL)
+        if self.result.mutations is not None:
+            endpoints.append(MUTATIONS_URL)
         return endpoints
 
     def format(self) -> str:
@@ -403,3 +407,33 @@ class Scop3pResultPeptidesTabularOutput(Scop3pResultTabularOutput):
 
     def get_sort_columns(self) -> List[str]:
         return list(PEPTIDES_PRIMARY_KEY)
+
+
+class Scop3pResultMutationsTabularOutput(Scop3pResultTabularOutput):
+    """Tabular output for mutations data."""
+
+    def get_columns(self) -> List[str]:
+        """Get mutation columns.
+
+        Returns:
+            List of column names for mutations
+        """
+        return list(MUTATIONS_COLUMNS)
+
+    def get_data(self) -> List[Dict[str, Any]]:
+        """Get mutations data.
+
+        Returns:
+            List of mutation records
+        """
+        if not self.result.mutations:
+            return []
+
+        if isinstance(self.result.mutations, list):
+            return self.result.mutations
+        if isinstance(self.result.mutations, dict):
+            return self.result.mutations.get("mutations", [])
+        return []
+
+    def get_sort_columns(self) -> List[str]:
+        return list(MUTATIONS_PRIMARY_KEY)

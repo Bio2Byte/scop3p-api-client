@@ -14,6 +14,7 @@ from scop3p_api_client.output import (
     Scop3pResultFairLogOutput,
     Scop3pResultJSONOutput,
     Scop3pResultModificationsTabularOutput,
+    Scop3pResultMutationsTabularOutput,
     Scop3pResultPeptidesTabularOutput,
     Scop3pResultStructuresTabularOutput,
 )
@@ -182,11 +183,42 @@ class TestOutputFormatters(unittest.TestCase):
         self.assertIn("1ABC", structures_output)
         self.assertIn("ABCDE", peptides_output)
 
+    def test_mutations_tabular_output(self) -> None:
+        result = Scop3pResult(
+            modifications={},
+            mutations=[
+                {
+                    "position": 326,
+                    "pdbIds": ["1ABC", "2XYZ"],
+                    "referenceAA": "R",
+                    "altAA": "H",
+                    "type": "Disease",
+                    "disease": "Mental retardation",
+                },
+                {
+                    "position": 326,
+                    "pdbIds": [],
+                    "referenceAA": "R",
+                    "altAA": "A",
+                    "type": "Disease",
+                    "disease": "Other disease",
+                },
+            ],
+            metadata={},
+        )
+        output = Scop3pResultMutationsTabularOutput(result, separator="\t", include_header=True).format()
+        lines = output.split("\n")
+        self.assertEqual(len(lines), 3)
+        self.assertIn("referenceAA", lines[0])
+        self.assertEqual(lines[1].split("\t")[3], "A")
+        self.assertEqual(lines[2].split("\t")[3], "H")
+
     def test_empty_data(self) -> None:
         result = Scop3pResult(modifications={}, metadata={})
         self.assertEqual(Scop3pResultModificationsTabularOutput(result).format(), "")
         self.assertEqual(Scop3pResultStructuresTabularOutput(result).format(), "")
         self.assertEqual(Scop3pResultPeptidesTabularOutput(result).format(), "")
+        self.assertEqual(Scop3pResultMutationsTabularOutput(result).format(), "")
 
     def test_fair_log_formatter_contains_fair_sections(self) -> None:
         result = Scop3pResult(
@@ -220,6 +252,7 @@ class TestOutputFormatters(unittest.TestCase):
             modifications={"modifications": []},
             structures=[{"pdbId": "1ABC", "structureModificationsList": []}],
             peptides=[{"peptideSequence": "ABC"}],
+            mutations=[{"position": 1, "referenceAA": "A", "altAA": "S", "type": "Disease"}],
             metadata={
                 "execution_datetime": "2026-03-02T00:00:00+00:00",
                 "cli_arguments": {"accession": "O00571", "modifications": "phospho"},
@@ -227,9 +260,10 @@ class TestOutputFormatters(unittest.TestCase):
         )
         payload = json.loads(Scop3pResultFairLogOutput(result).format())
         endpoints = payload["fair"]["accessible"]["api_endpoints"]
-        self.assertEqual(len(endpoints), 3)
+        self.assertEqual(len(endpoints), 4)
         self.assertTrue(any("get-structures-modifications" in endpoint for endpoint in endpoints))
         self.assertTrue(any("get-peptides-modifications" in endpoint for endpoint in endpoints))
+        self.assertTrue(any("get-mutations" in endpoint for endpoint in endpoints))
 
 
 if __name__ == "__main__":

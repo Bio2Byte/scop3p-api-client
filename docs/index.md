@@ -37,3 +37,4 @@ This documentation covers:
 - `https://iomics.ugent.be/scop3p/api/modifications`
 - `https://iomics.ugent.be/scop3p/api/get-structures-modifications`
 - `https://iomics.ugent.be/scop3p/api/get-peptides-modifications`
+- `https://iomics.ugent.be/scop3p/api/get-mutations`

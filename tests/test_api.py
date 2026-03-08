@@ -20,6 +20,7 @@ from scop3p_api_client.api import (
     _cache_path_for,
     build_url,
     fetch_modifications,
+    fetch_mutations,
     fetch_peptides,
     fetch_structures,
 )
@@ -257,6 +258,27 @@ class TestApiAndCache(unittest.TestCase):
             self.assertEqual(data, cached_data)
             self.assertEqual(meta["source"], "cache_fallback")
 
+    def test_fetch_mutations_returns_metadata_on_api_response(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            temp_cache_dir = Path(tmp)
+            payload = [{"position": 326, "referenceAA": "R", "altAA": "H", "type": "Disease"}]
+            session = MockSession(
+                {
+                    "https://iomics.ugent.be/scop3p/api/get-mutations?accession=P12345": (200, payload),
+                }
+            )
+            api = Scop3pRestApi()
+            data, meta = api.fetch_mutations(
+                "P12345",
+                session=session,
+                cache_dir=temp_cache_dir,
+                ttl=0,
+                return_metadata=True,
+            )
+            self.assertEqual(data, payload)
+            self.assertEqual(meta["source"], "api")
+            self.assertIn("cache_file", meta)
+
     def test_fetch_structures_wrapper_forwards_arguments(self) -> None:
         sentinel = {"structures": []}
         with patch(
@@ -300,6 +322,29 @@ class TestApiAndCache(unittest.TestCase):
             timeout=9,
             cache_dir="/tmp/y",
             ttl=30,
+            return_metadata=True,
+        )
+
+    def test_fetch_mutations_wrapper_forwards_arguments(self) -> None:
+        sentinel = [{"position": 1}]
+        with patch(
+            "scop3p_api_client.api._DEFAULT_SCOP3P_API.fetch_mutations",
+            return_value=sentinel,
+        ) as mocked:
+            result = fetch_mutations(
+                "P12345",
+                timeout=11,
+                cache_dir="/tmp/z",
+                ttl=45,
+                return_metadata=True,
+            )
+        self.assertIs(result, sentinel)
+        mocked.assert_called_once_with(
+            accession="P12345",
+            session=None,
+            timeout=11,
+            cache_dir="/tmp/z",
+            ttl=45,
             return_metadata=True,
         )
 

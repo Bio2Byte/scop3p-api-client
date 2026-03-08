@@ -75,6 +75,14 @@ ABCDEFG	1	7	None	5	None	D	None	None	None	None
 HIJKLMN	10	16	None	12	None	L	None	None	None	None
 ```
 
+## Mutations TSV Example
+
+```tsv
+position	pdbIds	referenceAA	altAA	type	disease
+326	{}	R	A	Disease	Other disease
+326	['1ABC', '2XYZ']	R	H	Disease	Mental retardation
+```
+
 ## FAIR Provenance Log Example
 
 Example from `output.log`:
@@ -110,7 +118,8 @@ Example from `output.log`:
       "api_endpoints": [
         "https://iomics.ugent.be/scop3p/api/modifications",
         "https://iomics.ugent.be/scop3p/api/get-structures-modifications",
-        "https://iomics.ugent.be/scop3p/api/get-peptides-modifications"
+        "https://iomics.ugent.be/scop3p/api/get-peptides-modifications",
+        "https://iomics.ugent.be/scop3p/api/get-mutations"
       ]
     },
     "interoperable": {
@@ -127,8 +136,9 @@ Example from `output.log`:
 ## Reproduce Locally
 
 ```bash
-scop3p --accession O95755 --include-structures --include-peptides
+scop3p --accession O95755 --include-structures --include-peptides --include-mutations
 scop3p --accession O95755 --save modifications:tsv:modifications.tsv
 scop3p --accession O95755 --save structures:tsv:structures.tsv
 scop3p --accession O95755 --save peptides:tsv:peptides.tsv
+scop3p --accession O95755 --save mutations:tsv:mutations.tsv
 ```

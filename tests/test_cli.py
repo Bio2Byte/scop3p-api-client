@@ -75,6 +75,7 @@ class TestCli(unittest.TestCase):
             ttl,
             include_structures,
             include_peptides,
+            include_mutations,
             cli_args,
         ):
             calls.append(
@@ -84,6 +85,7 @@ class TestCli(unittest.TestCase):
                     "ttl": ttl,
                     "include_structures": include_structures,
                     "include_peptides": include_peptides,
+                    "include_mutations": include_mutations,
                 }
             )
             return _mock_result(cli_args)
@@ -106,6 +108,7 @@ class TestCli(unittest.TestCase):
             ttl,
             include_structures,
             include_peptides,
+            include_mutations,
             cli_args,
         ):
             calls.append(ttl)
@@ -126,6 +129,7 @@ class TestCli(unittest.TestCase):
             ttl,
             include_structures,
             include_peptides,
+            include_mutations,
             cli_args,
         ):
             return _mock_result(cli_args)
@@ -161,6 +165,7 @@ class TestCli(unittest.TestCase):
             ttl,
             include_structures,
             include_peptides,
+            include_mutations,
             cli_args,
         ):
             raise RuntimeError("network down")
@@ -179,6 +184,7 @@ class TestCli(unittest.TestCase):
             ttl,
             include_structures,
             include_peptides,
+            include_mutations,
             cli_args,
         ):
             return _mock_result(cli_args)
@@ -204,30 +210,41 @@ class TestCli(unittest.TestCase):
             ttl,
             include_structures,
             include_peptides,
+            include_mutations,
             cli_args,
         ):
             calls.append(
                 {
                     "include_structures": include_structures,
                     "include_peptides": include_peptides,
+                    "include_mutations": include_mutations,
                 }
             )
             result = _mock_result(cli_args)
             result.structures = [{"pdbId": "1ABC", "structureModificationsList": []}]
             result.peptides = [{"peptideSequence": "ABCDE", "uniprotPosition": 10}]
+            result.mutations = [{"position": 326, "referenceAA": "R", "altAA": "H", "type": "Disease"}]
             return result
 
         with patch("scop3p_api_client.cli.Scop3pResult.from_api", new=classmethod(fake_from_api)):
             code, stdout, _ = self._run_main(
-                ["--accession", "O00571", "--include-structures", "--include-peptides"]
+                [
+                    "--accession",
+                    "O00571",
+                    "--include-structures",
+                    "--include-peptides",
+                    "--include-mutations",
+                ]
             )
 
         self.assertIsNone(code)
         self.assertTrue(calls[0]["include_structures"])
         self.assertTrue(calls[0]["include_peptides"])
+        self.assertTrue(calls[0]["include_mutations"])
         payload = json.loads(stdout)
         self.assertIn("structures", payload["apiResult"])
         self.assertIn("peptides", payload["apiResult"])
+        self.assertIn("mutations", payload["apiResult"])
 
     def test_cli_save_multi_output_auto_enables_related_fetches(self) -> None:
         calls: list[dict] = []
@@ -240,12 +257,14 @@ class TestCli(unittest.TestCase):
             ttl,
             include_structures,
             include_peptides,
+            include_mutations,
             cli_args,
         ):
             calls.append(
                 {
                     "include_structures": include_structures,
                     "include_peptides": include_peptides,
+                    "include_mutations": include_mutations,
                 }
             )
             result = _mock_result(cli_args)
@@ -269,11 +288,26 @@ class TestCli(unittest.TestCase):
                     "uniprotPosition": 99,
                 }
             ]
+            result.mutations = [
+                {
+                    "position": 326,
+                    "referenceAA": "R",
+                    "altAA": "H",
+                    "type": "Disease",
+                },
+                {
+                    "position": 326,
+                    "referenceAA": "R",
+                    "altAA": "A",
+                    "type": "Disease",
+                },
+            ]
             return result
 
         mods_file = self.tmp_path / "mods.tsv"
         structures_file = self.tmp_path / "structures.tsv"
         peptides_file = self.tmp_path / "peptides.json"
+        mutations_file = self.tmp_path / "mutations.tsv"
         os.chdir(self.tmp_path)
         with patch("scop3p_api_client.cli.Scop3pResult.from_api", new=classmethod(fake_from_api)):
             code, stdout, _ = self._run_main(
@@ -286,17 +320,22 @@ class TestCli(unittest.TestCase):
                     f"structures:tsv:{structures_file}",
                     "--save",
                     f"peptides:json:{peptides_file}",
+                    "--save",
+                    f"mutations:tsv:{mutations_file}",
                 ]
             )
 
         self.assertIsNone(code)
         self.assertTrue(calls[0]["include_structures"])
         self.assertTrue(calls[0]["include_peptides"])
+        self.assertTrue(calls[0]["include_mutations"])
         self.assertIn("Saved structures (tsv)", stdout)
         self.assertIn("Saved peptides (json)", stdout)
+        self.assertIn("Saved mutations (tsv)", stdout)
         self.assertTrue(mods_file.exists())
         self.assertTrue(structures_file.exists())
         self.assertTrue(peptides_file.exists())
+        self.assertTrue(mutations_file.exists())
         self.assertTrue(structures_file.read_text(encoding="utf-8").startswith("pdbId"))
         peptides_payload = json.loads(peptides_file.read_text(encoding="utf-8"))
         self.assertEqual(
@@ -307,6 +346,9 @@ class TestCli(unittest.TestCase):
             list(peptides_payload[0].keys()),
             ["peptideSequence", "peptideStart", "peptideEnd", "uniprotPosition"],
         )
+        mutation_lines = mutations_file.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(mutation_lines[0], "position\tpdbIds\treferenceAA\taltAA\ttype\tdisease")
+        self.assertTrue(mutation_lines[1].startswith("326\t"))
 
     def test_cli_save_invalid_spec_fails(self) -> None:
         code, _, stderr = self._run_main(
@@ -360,6 +402,7 @@ class TestCli(unittest.TestCase):
             ttl,
             include_structures,
             include_peptides,
+            include_mutations,
             cli_args,
         ):
             return _mock_result(cli_args)
