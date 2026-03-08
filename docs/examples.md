@@ -79,7 +79,7 @@ HIJKLMN	10	16	None	12	None	L	None	None	None	None
 
 ```tsv
 position	pdbIds	referenceAA	altAA	type	disease
-326	[]	R	A	Disease	Other disease
+326	{}	R	A	Disease	Other disease
 326	['1ABC', '2XYZ']	R	H	Disease	Mental retardation
 ```
 
