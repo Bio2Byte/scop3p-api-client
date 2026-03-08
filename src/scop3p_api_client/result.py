@@ -20,12 +20,14 @@ class Scop3pResult:
         modifications: Modifications data from the API
         structures: Optional structures data from the API
         peptides: Optional peptides data from the API
+        mutations: Optional mutations data from the API
         metadata: Execution metadata including caching info
     """
 
     modifications: Any
     structures: Optional[Any] = None
     peptides: Optional[Any] = None
+    mutations: Optional[Any] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -36,6 +38,7 @@ class Scop3pResult:
         ttl: int = DEFAULT_CACHE_TTL,
         include_structures: bool = False,
         include_peptides: bool = False,
+        include_mutations: bool = False,
         cli_args: Optional[Dict[str, Any]] = None,
     ) -> Scop3pResult:
         """Fetch data from Scop3P API and construct a Scop3pResult.
@@ -46,6 +49,7 @@ class Scop3pResult:
             ttl: Cache time-to-live in seconds
             include_structures: Whether to fetch structures data
             include_peptides: Whether to fetch peptides data
+            include_mutations: Whether to fetch mutations data
             cli_args: Optional CLI arguments to include in metadata
 
         Returns:
@@ -85,6 +89,18 @@ class Scop3pResult:
             peptides_data = peptides_response.get("peptides")
             cache_info["peptides"] = peptides_cache_info
 
+        # Fetch mutations if requested
+        mutations_data = None
+        if include_mutations:
+            mutations_response, mutations_cache_info = api_wrapper.fetch_mutations(
+                accession, ttl=ttl, return_metadata=True
+            )
+            if isinstance(mutations_response, dict):
+                mutations_data = mutations_response.get("mutations", mutations_response)
+            else:
+                mutations_data = mutations_response
+            cache_info["mutations"] = mutations_cache_info
+
         # Build metadata
         metadata = {
             "execution_datetime": datetime.datetime.now(
@@ -108,6 +124,7 @@ class Scop3pResult:
             modifications=modifications_data,
             structures=structures_data,
             peptides=peptides_data,
+            mutations=mutations_data,
             metadata=metadata,
         )
 
@@ -131,6 +148,11 @@ class Scop3pResult:
         if self.peptides is not None:
             api_result["peptides"] = normalize_dataset_payload(
                 "peptides", self.peptides
+            )
+
+        if self.mutations is not None:
+            api_result["mutations"] = normalize_dataset_payload(
+                "mutations", self.mutations
             )
 
         return {

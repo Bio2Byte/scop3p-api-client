@@ -36,6 +36,17 @@ class TestSorting(unittest.TestCase):
         normalized = normalize_dataset_payload("modifications", mods)
         self.assertEqual([row["position"] for row in normalized], [10, 20])
 
+        mutations = [
+            {"position": 326, "referenceAA": "R", "altAA": "H", "type": "Disease"},
+            {"type": "Disease", "position": 326, "altAA": "A", "referenceAA": "R"},
+        ]
+        normalized_mutations = normalize_dataset_payload("mutations", mutations)
+        self.assertEqual([row["altAA"] for row in normalized_mutations], ["A", "H"])
+        self.assertEqual(
+            list(normalized_mutations[0].keys()),
+            ["position", "referenceAA", "altAA", "type"],
+        )
+
         payload = {"anything": "kept"}
         self.assertIs(normalize_dataset_payload("unknown-target", payload), payload)
         self.assertEqual(normalize_dataset_payload("peptides", "raw"), "raw")

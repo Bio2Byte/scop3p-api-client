@@ -67,6 +67,15 @@ STRUCTURES_COLUMNS: tuple[str, ...] = (
     "conservedScale",
 )
 
+MUTATIONS_COLUMNS: tuple[str, ...] = (
+    "position",
+    "pdbIds",
+    "referenceAA",
+    "altAA",
+    "type",
+    "disease",
+)
+
 MODIFICATIONS_PRIMARY_KEY: tuple[str, ...] = ("position", "residue")
 PEPTIDES_PRIMARY_KEY: tuple[str, ...] = (
     "peptideSequence",
@@ -77,6 +86,7 @@ PEPTIDES_PRIMARY_KEY: tuple[str, ...] = (
     "score",
 )
 STRUCTURES_PRIMARY_KEY: tuple[str, ...] = ("pdbId",)
+MUTATIONS_PRIMARY_KEY: tuple[str, ...] = ("position", "referenceAA", "altAA", "type")
 
 
 def reorder_dict_keys(
@@ -176,6 +186,25 @@ def normalize_dataset_payload(target: str, payload: Any) -> Any:
                     rows,
                     ordered_columns=STRUCTURES_COLUMNS,
                     primary_key=STRUCTURES_PRIMARY_KEY,
+                )
+            return normalized_payload
+        return payload
+
+    if target == "mutations":
+        if isinstance(payload, list):
+            return normalize_rows(
+                payload,
+                ordered_columns=MUTATIONS_COLUMNS,
+                primary_key=MUTATIONS_PRIMARY_KEY,
+            )
+        if isinstance(payload, dict):
+            normalized_payload = dict(payload)
+            rows = normalized_payload.get("mutations")
+            if isinstance(rows, list):
+                normalized_payload["mutations"] = normalize_rows(
+                    rows,
+                    ordered_columns=MUTATIONS_COLUMNS,
+                    primary_key=MUTATIONS_PRIMARY_KEY,
                 )
             return normalized_payload
         return payload

@@ -39,10 +39,10 @@ Use a specific API version for modifications:
 scop3p --accession O95755 --api-version 1
 ```
 
-Include structures and peptides in standard output JSON:
+Include structures, peptides, and mutations in standard output JSON:
 
 ```bash
-scop3p --accession O95755 --include-structures --include-peptides
+scop3p --accession O95755 --include-structures --include-peptides --include-mutations
 ```
 
 Save additional files in one run:
@@ -51,7 +51,8 @@ Save additional files in one run:
 scop3p --accession O95755 \
   --save modifications:tsv:modifications.tsv \
   --save structures:tsv:structures.tsv \
-  --save peptides:json:peptides.json
+  --save peptides:json:peptides.json \
+  --save mutations:tsv:mutations.tsv
 ```
 
 ## Cache Controls
@@ -87,8 +88,9 @@ scop3p --accession O95755 --log-file run-fair.log --raw
 
 ## What `--save` Supports
 
-- Targets: `modifications`, `structures`, `peptides`
+- Targets: `modifications`, `structures`, `peptides`, `mutations`
 - Formats: `json`, `tsv`
+- Mutations TSV columns: `position`, `pdbIds`, `referenceAA`, `altAA`, `type`, `disease`
 
 Examples:
 

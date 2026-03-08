@@ -5,6 +5,7 @@ from scop3p_api_client.result import Scop3pResult
 from scop3p_api_client.output import (
     Scop3pResultJSONOutput,
     Scop3pResultModificationsTabularOutput,
+    Scop3pResultMutationsTabularOutput,
     Scop3pResultStructuresTabularOutput,
     Scop3pResultPeptidesTabularOutput,
 )
@@ -19,6 +20,7 @@ def main():
         accession="O95755",
         include_structures=True,
         include_peptides=True,
+        include_mutations=True,
         ttl=300
     )
 
@@ -67,6 +69,19 @@ def main():
         pep_lines = pep_output.split("\n")[:10]
         print("\n".join(pep_lines))
 
+    if result.mutations:
+        print("\n" + "="*80)
+        print("Mutations TSV (first 10 lines):")
+        print("="*80)
+        mut_formatter = Scop3pResultMutationsTabularOutput(
+            result,
+            separator="\t",
+            include_header=True
+        )
+        mut_output = mut_formatter.format()
+        mut_lines = mut_output.split("\n")[:10]
+        print("\n".join(mut_lines))
+
     print("\n" + "="*80)
     print("Example: Saving to files")
     print("="*80)
@@ -76,6 +91,7 @@ def main():
     # mods_formatter.write_to_file("modifications.tsv")
     # struct_formatter.write_to_file("structures.tsv")
     # pep_formatter.write_to_file("peptides.tsv")
+    # mut_formatter.write_to_file("mutations.tsv")
 
     print("To save outputs, uncomment the write_to_file() calls in the script.")
     print("\nDone!")

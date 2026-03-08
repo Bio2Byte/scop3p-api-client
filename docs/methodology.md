@@ -27,11 +27,12 @@ flowchart LR
 - Modifications: `https://iomics.ugent.be/scop3p/api/modifications`
 - Structures: `https://iomics.ugent.be/scop3p/api/get-structures-modifications`
 - Peptides: `https://iomics.ugent.be/scop3p/api/get-peptides-modifications`
+- Mutations: `https://iomics.ugent.be/scop3p/api/get-mutations`
 
 URL behavior:
 
 - Modifications URL is built as `?accession=<id>` and optionally `&version=<api_version>`.
-- Structures and peptides use `?accession=<id>`.
+- Structures, peptides, and mutations use `?accession=<id>`.
 
 ## `requests` Behavior
 
@@ -47,7 +48,7 @@ Cache key material:
 
 - `accession`
 - `api_version` (modifications only)
-- dataset suffix (`modifications`, `structures`, `peptides`)
+- dataset suffix (`modifications`, `structures`, `peptides`, `mutations`)
 
 Cache file name:
 
@@ -91,6 +92,7 @@ Before serialization, payloads are normalized for stable order:
 
 - predictable column/key ordering for known datasets
 - deterministic row sorting by dataset primary keys
+- mutations sorted by `position`, then `referenceAA`, then `altAA`, then `type`
 
 Structures TSV behavior:
 

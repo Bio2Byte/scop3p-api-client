@@ -11,6 +11,7 @@ import requests
 BASE_URL = "https://iomics.ugent.be/scop3p/api/modifications"
 STRUCTURES_URL = "https://iomics.ugent.be/scop3p/api/get-structures-modifications"
 PEPTIDES_URL = "https://iomics.ugent.be/scop3p/api/get-peptides-modifications"
+MUTATIONS_URL = "https://iomics.ugent.be/scop3p/api/get-mutations"
 
 # default cache time-to-live (seconds)
 DEFAULT_CACHE_TTL = 300
@@ -352,6 +353,97 @@ class Scop3pRestApi:
                     pass
             raise
 
+    def fetch_mutations(
+        self,
+        accession: str,
+        session: Optional[requests.Session] = None,
+        timeout: Optional[int] = None,
+        cache_dir: Optional[str | Path] = None,
+        ttl: Optional[int] = None,
+        return_metadata: bool = False,
+    ) -> Any:
+        """Fetch mutations from Scop3P API with caching."""
+        if not accession:
+            raise ValueError("accession must be provided")
+
+        cache_dir = self._resolve_cache_dir(cache_dir)
+        session = self._resolve_session(session)
+        timeout = self._resolve_timeout(timeout)
+        ttl = self._resolve_ttl(ttl)
+
+        cache_file = _cache_path_for(accession, None, cache_dir, suffix="mutations")
+        cache_path = str(cache_file)
+
+        def get_cache_stats():
+            if not cache_file.exists():
+                return {}
+            stat = cache_file.stat()
+            mtime = stat.st_mtime
+            ctime = getattr(stat, "st_birthtime", stat.st_ctime)
+            size = stat.st_size
+            return {
+                "size_bytes": size,
+                "size_kilobytes": size / 1024,
+                "size_megabytes": size / (1024 * 1024),
+                "modified_at_utc": datetime.datetime.fromtimestamp(
+                    mtime, datetime.timezone.utc
+                ).isoformat(),
+                "modified_at_localtime": datetime.datetime.fromtimestamp(mtime)
+                .astimezone()
+                .isoformat(),
+                "created_at_utc": datetime.datetime.fromtimestamp(
+                    ctime, datetime.timezone.utc
+                ).isoformat(),
+                "created_at_localtime": datetime.datetime.fromtimestamp(ctime)
+                .astimezone()
+                .isoformat(),
+            }
+
+        if cache_file.exists():
+            mtime = cache_file.stat().st_mtime
+            if time.time() - mtime <= ttl:
+                try:
+                    data = json.loads(cache_file.read_text(encoding="utf-8"))
+                    if return_metadata:
+                        meta = {"source": "cache", "cache_file": cache_path}
+                        meta.update(get_cache_stats())
+                        return data, meta
+                    return data
+                except Exception:
+                    pass
+
+        url = f"{MUTATIONS_URL}?accession={accession}"
+
+        try:
+            resp = session.get(url, timeout=timeout)
+            resp.raise_for_status()
+            data = resp.json()
+
+            try:
+                tmp = cache_file.with_suffix(".tmp")
+                tmp.write_text(json.dumps(data), encoding="utf-8")
+                tmp.replace(cache_file)
+            except Exception:
+                pass
+
+            if return_metadata:
+                meta = {"source": "api", "cache_file": cache_path}
+                meta.update(get_cache_stats())
+                return data, meta
+            return data
+        except Exception:
+            if cache_file.exists():
+                try:
+                    data = json.loads(cache_file.read_text(encoding="utf-8"))
+                    if return_metadata:
+                        meta = {"source": "cache_fallback", "cache_file": cache_path}
+                        meta.update(get_cache_stats())
+                        return data, meta
+                    return data
+                except Exception:
+                    pass
+            raise
+
 
 _DEFAULT_SCOP3P_API = Scop3pRestApi()
 
@@ -406,6 +498,25 @@ def fetch_peptides(
 ) -> Any:
     """Backward-compatible wrapper over Scop3pRestApi.fetch_peptides."""
     return _DEFAULT_SCOP3P_API.fetch_peptides(
+        accession=accession,
+        session=session,
+        timeout=timeout,
+        cache_dir=cache_dir,
+        ttl=ttl,
+        return_metadata=return_metadata,
+    )
+
+
+def fetch_mutations(
+    accession: str,
+    session: Optional[requests.Session] = None,
+    timeout: int = 10,
+    cache_dir: Optional[str | Path] = None,
+    ttl: int = DEFAULT_CACHE_TTL,
+    return_metadata: bool = False,
+) -> Any:
+    """Backward-compatible wrapper over Scop3pRestApi.fetch_mutations."""
+    return _DEFAULT_SCOP3P_API.fetch_mutations(
         accession=accession,
         session=session,
         timeout=timeout,

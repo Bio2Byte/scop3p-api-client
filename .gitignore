@@ -20,3 +20,6 @@ dist/
 
 # Coverage
 .coverage
+
+# project
+output.log

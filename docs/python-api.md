@@ -19,6 +19,7 @@ result = Scop3pResult.from_api(
     ttl=600,                  # cache TTL in seconds
     include_structures=True,  # optional
     include_peptides=True,    # optional
+    include_mutations=True,   # optional
 )
 ```
 
@@ -36,7 +37,8 @@ Envelope shape:
   "apiResult": {
     "modifications": {},
     "structures": [],
-    "peptides": []
+    "peptides": [],
+    "mutations": []
   },
   "metadata": {}
 }
@@ -66,6 +68,11 @@ peptides, peptides_meta = api.fetch_peptides(
     accession="O95755",
     return_metadata=True,
 )
+
+mutations, mutations_meta = api.fetch_mutations(
+    accession="O95755",
+    return_metadata=True,
+)
 ```
 
 `return_metadata=True` includes source and cache metadata for each fetch.
@@ -77,6 +84,7 @@ The module also exports backward-compatible wrappers:
 - `fetch_modifications(...)`
 - `fetch_structures(...)`
 - `fetch_peptides(...)`
+- `fetch_mutations(...)`
 
 These forward arguments to a shared default `Scop3pRestApi` instance.
 

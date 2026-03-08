@@ -13,6 +13,7 @@ from .output import (
     Scop3pResultFairLogOutput,
     Scop3pResultJSONOutput,
     Scop3pResultModificationsTabularOutput,
+    Scop3pResultMutationsTabularOutput,
     Scop3pResultStructuresTabularOutput,
     Scop3pResultPeptidesTabularOutput,
 )
@@ -30,9 +31,9 @@ def _parse_save_spec(spec: str) -> tuple[str, str, pathlib.Path]:
     output_format = output_format.strip().lower()
     path = output_path.strip()
 
-    if target not in {"modifications", "structures", "peptides"}:
+    if target not in {"modifications", "structures", "peptides", "mutations"}:
         raise argparse.ArgumentTypeError(
-            f"Invalid --save target '{target}'. Choose: modifications, structures, peptides"
+            f"Invalid --save target '{target}'. Choose: modifications, structures, peptides, mutations"
         )
     if output_format not in {"json", "tsv"}:
         raise argparse.ArgumentTypeError(
@@ -76,6 +77,13 @@ def _build_formatter(
             include_header=include_header,
             null_value=null_value,
         )
+    if output_format == "tsv-mutations":
+        return Scop3pResultMutationsTabularOutput(
+            result,
+            separator=separator,
+            include_header=include_header,
+            null_value=null_value,
+        )
     raise ValueError(f"Unknown format '{output_format}'")
 
 
@@ -92,6 +100,7 @@ def _save_tsv_target(
         "modifications": "tsv-modifications",
         "structures": "tsv-structures",
         "peptides": "tsv-peptides",
+        "mutations": "tsv-mutations",
     }[target]
     formatter = _build_formatter(
         result=result,
@@ -113,6 +122,7 @@ def _format_dataset_json(
             "modifications": result.modifications,
             "structures": result.structures,
             "peptides": result.peptides,
+            "mutations": result.mutations,
         }[target],
     )
     if indent is None:
@@ -213,7 +223,7 @@ def main(argv: Optional[List[str]] = None) -> None:
         metavar="TARGET:FORMAT:PATH",
         help=(
             "Save additional outputs in a single run. "
-            "TARGET: modifications|structures|peptides, FORMAT: json|tsv"
+            "TARGET: modifications|structures|peptides|mutations, FORMAT: json|tsv"
         ),
     )
     parser.add_argument(
@@ -226,6 +236,11 @@ def main(argv: Optional[List[str]] = None) -> None:
         action="store_true",
         help="Include peptides in stdout JSON output (also implied by --save peptides:...)",
     )
+    parser.add_argument(
+        "--include-mutations",
+        action="store_true",
+        help="Include mutations in stdout JSON output (also implied by --save mutations:...)",
+    )
 
     args = parser.parse_args(argv)
 
@@ -235,6 +250,7 @@ def main(argv: Optional[List[str]] = None) -> None:
 
     include_structures = args.include_structures or ("structures" in save_targets)
     include_peptides = args.include_peptides or ("peptides" in save_targets)
+    include_mutations = args.include_mutations or ("mutations" in save_targets)
 
     # determine ttl: if no-cache requested, set ttl=0 to bypass reading cache
     if args.no_cache:
@@ -257,6 +273,7 @@ def main(argv: Optional[List[str]] = None) -> None:
             ttl=ttl,
             include_structures=include_structures,
             include_peptides=include_peptides,
+            include_mutations=include_mutations,
             cli_args=cli_args_payload,
         )
         run_log_messages.append("API fetch completed.")

@@ -43,7 +43,7 @@ class TestResult(unittest.TestCase):
         self.assertEqual(result.metadata["cli_arguments"]["output"], str(out_path))
         self.assertIn("execution_datetime", result.metadata)
 
-    def test_from_api_includes_structures_and_peptides(self) -> None:
+    def test_from_api_includes_structures_peptides_and_mutations(self) -> None:
         def fake_fetch_modifications(self, accession, api_version, ttl, return_metadata):
             return {"modifications": []}, {"source": "cache"}
 
@@ -52,6 +52,9 @@ class TestResult(unittest.TestCase):
 
         def fake_fetch_peptides(self, accession, ttl, return_metadata):
             return {"peptides": [{"peptideSequence": "ABC"}]}, {"source": "api"}
+
+        def fake_fetch_mutations(self, accession, ttl, return_metadata):
+            return [{"position": 326, "referenceAA": "R", "altAA": "H", "type": "Disease"}], {"source": "api"}
 
         with patch(
             "scop3p_api_client.result.Scop3pRestApi.fetch_modifications",
@@ -62,17 +65,23 @@ class TestResult(unittest.TestCase):
         ), patch(
             "scop3p_api_client.result.Scop3pRestApi.fetch_peptides",
             new=fake_fetch_peptides,
+        ), patch(
+            "scop3p_api_client.result.Scop3pRestApi.fetch_mutations",
+            new=fake_fetch_mutations,
         ):
             result = Scop3pResult.from_api(
                 accession="O00571",
                 include_structures=True,
                 include_peptides=True,
+                include_mutations=True,
             )
 
         self.assertEqual(result.structures[0]["pdbId"], "1ABC")
         self.assertEqual(result.peptides[0]["peptideSequence"], "ABC")
+        self.assertEqual(result.mutations[0]["position"], 326)
         self.assertIn("structures", result.metadata["caching"])
         self.assertIn("peptides", result.metadata["caching"])
+        self.assertIn("mutations", result.metadata["caching"])
 
     def test_to_dict_and_dump_json_include_optional_sections(self) -> None:
         result = Scop3pResult(
@@ -128,12 +137,31 @@ class TestResult(unittest.TestCase):
                     "uniprotPosition": 10,
                 },
             ],
+            mutations=[
+                {
+                    "type": "Disease",
+                    "position": 326,
+                    "altAA": "H",
+                    "referenceAA": "R",
+                    "pdbIds": ["1ABC", "2XYZ"],
+                    "disease": "Mental retardation",
+                },
+                {
+                    "position": 326,
+                    "referenceAA": "R",
+                    "altAA": "A",
+                    "type": "Disease",
+                    "pdbIds": [],
+                    "disease": "Other disease",
+                },
+            ],
             metadata={"a": "b"},
         )
         as_dict = result.to_dict()
         self.assertIn("modifications", as_dict["apiResult"])
         self.assertIn("structures", as_dict["apiResult"])
         self.assertIn("peptides", as_dict["apiResult"])
+        self.assertIn("mutations", as_dict["apiResult"])
 
         compact = result.dump_json(indent=None)
         pretty = result.dump_json(indent=2)
@@ -172,6 +200,14 @@ class TestResult(unittest.TestCase):
         self.assertEqual(
             list(parsed["apiResult"]["structures"][0].keys()),
             ["pdbId", "resolution", "stoichiometry", "interfacingMolecule", "method"],
+        )
+        self.assertEqual(
+            [item["altAA"] for item in parsed["apiResult"]["mutations"]],
+            ["A", "H"],
+        )
+        self.assertEqual(
+            list(parsed["apiResult"]["mutations"][0].keys()),
+            ["position", "pdbIds", "referenceAA", "altAA", "type", "disease"],
         )
 
 
