@@ -5,6 +5,13 @@
 [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-2ea44f?logo=githubpages)](https://bio2byte.github.io/scop3p-api-client/)
 [![Static Badge](https://img.shields.io/badge/licence-apache_2_0-blue)](https://github.com/Bio2Byte/scop3p-api-client/blob/main/LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Bio2Byte/scop3p-api-client)](https://github.com/Bio2Byte/scop3p-api-client/releases)
+[![PyPI version](https://img.shields.io/pypi/v/scop3p)](https://pypi.org/project/scop3p/)
+[![Install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square&logo=anaconda)](http://bioconda.github.io/recipes/scop3p/README.html)
+[![Install with Docker](https://img.shields.io/badge/install%20with-docker-important.svg?style=flat-square&logo=docker)](https://biocontainers.pro/tools/scop3p)
+[![Install with Singularity](https://img.shields.io/badge/install%20with-singularity-blue.svg?style=flat-square&logo=singularity)](https://biocontainers.pro/tools/scop3p)
+
+
+
 
 <div align="center">
   <img src="assets/branding/logo.png" alt="Project logo" width="640">
