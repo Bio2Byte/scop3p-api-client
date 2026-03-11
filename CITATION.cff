@@ -1,5 +1,12 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
+doi: "10.5281/zenodo.18889470"
+publisher: "CompOmics/Bio2Byte"
+title: "The official Scop3P REST API Python client"
+version: 1.1.0
+url: "https://github.com/Bio2Byte/scop3p-api-client"
+license: "Apache 2.0"
+date-released: "2026-03-08"
 authors:
 - family-names: "Ramasamy"
   given-names: "Pathmanaban"
@@ -10,10 +17,6 @@ authors:
 - family-names: "Díaz"
   given-names: "Adrián"
   orcid: "https://orcid.org/0000-0003-0165-1318"
-
-title: "Bio2Byte/scop3p-api-client"
-version: 1.0.0
-url: "https://github.com/Bio2Byte/scop3p-api-client"
 
 preferred-citation:
   type: article
