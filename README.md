@@ -1,6 +1,6 @@
 # The official Scop3P REST API Python client
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18889471.svg)](https://doi.org/10.5281/zenodo.18889471)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18889470.svg)](https://doi.org/10.5281/zenodo.18889470)
 [![Pages Deploy](https://github.com/Bio2Byte/scop3p-api-client/actions/workflows/jekyll-gh-pages.yml/badge.svg)](https://github.com/Bio2Byte/scop3p-api-client/actions/workflows/jekyll-gh-pages.yml)
 [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-2ea44f?logo=githubpages)](https://bio2byte.github.io/scop3p-api-client/)
 [![Static Badge](https://img.shields.io/badge/licence-apache_2_0-blue)](https://github.com/Bio2Byte/scop3p-api-client/blob/main/LICENSE)
@@ -41,6 +41,21 @@
 ## Citation
 
 If you use this Python client, cite the project in `CITATION.cff`.
+
+```bibtext
+@software{ramasamy_2026_18909477,
+  author       = {Ramasamy, Pathmanaban and
+                  Tichshenko, Natalia and
+                  Díaz, Adrián},
+  title        = {The official Scop3P REST API Python client},
+  month        = mar,
+  year         = 2026,
+  publisher    = {CompOmics/Bio2Byte},
+  version      = {v1.1.0},
+  doi          = {10.5281/zenodo.18909477},
+  url          = {https://doi.org/10.5281/zenodo.18909477},
+}
+```
 
 To cite Scop3P itself, please use:
 
